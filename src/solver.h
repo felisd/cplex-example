@@ -28,10 +28,20 @@ namespace cplex_example {
     // Prints the integer solution obtained by CPLEX to stdout.
     void print_solution(const char* filename);
     
+    // Solver parameters
+    struct s_param{
+        double relative_gap_tolerance;
+    };
+
+    s_param param;
+
   public:
     
     // Builds a solver for graph g.
     explicit Solver(Graph* graph);
+
+    // Set parameter.
+    void set_param(const char* param, const char* value);
     
     // Solves the TSP with CPLEX and prints the result.
     void solve_and_print(const char* filename);
