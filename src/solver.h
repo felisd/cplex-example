@@ -3,6 +3,7 @@
 
 #include "graph.h"
 #include <iostream>
+#include <vector>
 
 // Magic tricks to have CPLEX behave well:
 #ifndef IL_STD
@@ -16,18 +17,24 @@ ILOSTLBEGIN
 namespace cplex_example {
   class Solver {
     // The graph on which we are solving the TSP.
-    const Graph& g;
+    Graph* g;
     
+    // A vector containing CPLEX solution.
+    std::vector<std::uint32_t> solution;
+
+    // Costruct the integer solution obtained by CPLEX into a vector.
+    void construct_solution(const IloCplex& cplex, const IloArray<IloNumVarArray>& x);
+
     // Prints the integer solution obtained by CPLEX to stdout.
-    void print_solution(const IloCplex& cplex, const IloArray<IloNumVarArray>& x) const;
+    void print_solution(const char* filename);
     
   public:
     
     // Builds a solver for graph g.
-    explicit Solver(const Graph& g) : g{g} {}
+    explicit Solver(Graph* graph);
     
     // Solves the TSP with CPLEX and prints the result.
-    void solve_and_print() const;
+    void solve_and_print(const char* filename);
   };
 }
 
