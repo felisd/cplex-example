@@ -1,10 +1,23 @@
 #include "solver.h"
+#include <cstdlib>
 #include <cmath>
 #include <limits>
 
 namespace cplex_example {
   Solver::Solver(Graph* graph) {
     g = graph;
+    param.relative_gap_tolerance = 0;
+  }
+
+  void Solver::set_param(const char* name, const char* value) {
+    if (strcmp(name,"-GAP") == 0) {
+      double dvalue = strtod(value,NULL);
+      param.relative_gap_tolerance = dvalue;
+      std::cout << "Set relative_gap_tolerance = " << dvalue << std::endl;
+    }
+    else {
+      std::cout << "Unknown parameter: " << name << std::endl;
+    }
   }
 
   void Solver::solve_and_print(const char* filename) {
@@ -136,6 +149,9 @@ namespace cplex_example {
 
     // Create the solver object
     IloCplex cplex(model);
+
+    // Set relative gap
+    cplex.setParam(IloCplex::EpGap, param.relative_gap_tolerance);
 
     // Export model to file (useful for debugging!)
     cplex.exportModel("model.lp");
