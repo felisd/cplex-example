@@ -7,7 +7,7 @@
 
 ##### Compile and run
 
-* Get the code: `git clone https://github.com/alberto-santini/cplex_example.git`.
+* Get the code (clone or download).
 * Move to the new directory: `cd cplex_example`.
 * Create a build directory: `mkdir build`.
 * Move to the build directory: `cd build`.

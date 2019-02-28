@@ -17,6 +17,8 @@ find_package(Cplex)
 include_directories(SYSTEM ${CPLEX_INCLUDE_DIRS})
 
 set(SOURCE_FILES
+    src/tinyxml2.h
+    src/tinyxml2.cpp
     src/graph.h
     src/graph.cpp
     src/solver.h

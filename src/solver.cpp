@@ -3,8 +3,12 @@
 #include <limits>
 
 namespace cplex_example {
-  void Solver::solve_and_print() const {
-    const auto n = g.size();
+  Solver::Solver(Graph* graph) {
+    g = graph;
+  }
+
+  void Solver::solve_and_print(const char* filename) {
+    auto n = g->size();
 
     // CPLEX environment. Takes care of everything, including memory management for CPLEX objects.
     IloEnv env;
@@ -119,7 +123,7 @@ namespace cplex_example {
     // Create objective function
     for(auto i = 0u; i < n; ++i) {
       for(auto j = 0u; j < n; ++j) {
-        expr += g.cost(i, j) * x[i][j];
+        expr += g->cost(i, j) * x[i][j];
       }
     }
     IloObjective obj(env, expr, IloObjective::Minimize);
@@ -153,7 +157,8 @@ namespace cplex_example {
       std::cout << "\n\nCplex success!\n";
       std::cout << "\tStatus: " << cplex.getStatus() << "\n";
       std::cout << "\tObjective value: " << cplex.getObjValue() << "\n";
-      print_solution(cplex, x);
+      construct_solution(cplex, x);
+      print_solution(filename);
     } else {
       std::cerr << "\n\nCplex error!\n";
       std::cerr << "\tStatus: " << cplex.getStatus() << "\n";
@@ -163,17 +168,16 @@ namespace cplex_example {
     env.end();
   }
 
-  void Solver::print_solution(const IloCplex& cplex, const IloArray<IloNumVarArray>& x) const {
-    const auto n = g.size();
+  void Solver::construct_solution(const IloCplex& cplex, const IloArray<IloNumVarArray>& x) {
+    const auto n = g->size();
     assert(x.getSize() == n);
-
-    std::cout << "\n\nTour: ";
 
     const auto starting_vertex = 0u;
     auto current_vertex = starting_vertex;
     
     do {
-      std::cout << current_vertex << " ";
+      solution.push_back(current_vertex);
+
       for(auto i = 0u; i < n; ++i) {
         if(cplex.getValue(x[current_vertex][i]) > .5) {
           current_vertex = i;
@@ -181,7 +185,19 @@ namespace cplex_example {
         }
       }
     } while(current_vertex != starting_vertex);
+  }
+
+  void Solver::print_solution(const char* filename) {
+    // Print tour
+    std::cout << "\n\nTour: ";
+
+    for (auto i = 0u; i < solution.size(); i++) {
+      std::cout << solution[i] << " ";
+    }
 
     std::cout << "\n";
+
+    // Write to file
+    g->print(filename,solution);
   }
 }
